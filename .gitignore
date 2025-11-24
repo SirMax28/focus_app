@@ -5,6 +5,9 @@ node_modules/
 .env
 dist/
 *.db
+.vscode/
+.history/
+*.code-workspace
 
 ### Astro ###
 # Gitignore template for Astro projects
