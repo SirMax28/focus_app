@@ -171,34 +171,34 @@ import SideMenu from '../components/SideMenu.jsx';
 						<div style="
 							display: flex;
 							align-items: center;
-							gap: 0.8rem;
+							gap: 1rem;
 							margin-bottom: 0.8rem;
 						">
 							<div style="
 								position: relative;
-								width: 60px;
-								height: 60px;
+								width: 70px;
+								height: 70px;
 							">
-								<svg width="60" height="60" style="transform: rotate(-90deg);">
-									<circle cx="30" cy="30" r="26" fill="none" stroke="#E6CCB2" stroke-width="5"/>
-									<circle id="progress-circle" cx="30" cy="30" r="26" fill="none" stroke="#7F5539" stroke-width="5" 
-										stroke-dasharray="163" stroke-dashoffset="163" stroke-linecap="round"/>
+								<svg width="70" height="70" style="transform: rotate(-90deg);">
+									<circle cx="35" cy="35" r="30" fill="none" stroke="#E6CCB2" stroke-width="5"/>
+									<circle id="progress-circle" cx="35" cy="35" r="30" fill="none" stroke="#7F5539" stroke-width="5" 
+										stroke-dasharray="188" stroke-dashoffset="188" stroke-linecap="round"/>
 								</svg>
 								<span id="progress-percent" style="
 									position: absolute;
 									top: 50%;
 									left: 50%;
 									transform: translate(-50%, -50%);
-									font-size: 0.75rem;
+									font-size: 0.9rem;
 									font-weight: 700;
 									color: #3C2A20;
 								">0/7</span>
 							</div>
 							<div>
-								<p style="margin: 0; font-size: 0.95rem; font-weight: 600; color: #3C2A20;">
+								<p style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #3C2A20;">
 									Progreso de la semana
 								</p>
-								<p id="progress-text" style="margin: 0; font-size: 0.8rem; color: #7F5539;">¡Sigue así!</p>
+								<p id="progress-text" style="margin: 0; font-size: 0.95rem; color: #7F5539; font-weight: 500;">¡Sigue así!</p>
 							</div>
 						</div>
 
@@ -359,10 +359,10 @@ import SideMenu from '../components/SideMenu.jsx';
 							else progressText.textContent = '¡Semana perfecta! 🔥';
 						}
 
-						// Actualizar círculo SVG ( en base a circunferencia = 2 * PI * 26 ≈ 163)
+						//círculo SVG ( en base a circunferencia = 2 * PI * 30 ≈ 188)
 						const progressCircle = document.getElementById('progress-circle');
 						if (progressCircle) {
-							const circumference = 163;
+							const circumference = 188;
 							const offset = circumference - (progress / 100) * circumference;
 							progressCircle.style.strokeDashoffset = String(offset);
 						}
