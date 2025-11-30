@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+/* Fuentes Omnes */
+@font-face {
+  font-family: "Omnes";
+  src: url("/fonts/Omnes Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Omnes";
+  src: url("/fonts/Omnes SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Omnes";
+  src: url("/fonts/Omnes Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Omnes";
+  src: url("/fonts/Omnes Black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* Estilos base globales */
+html,
+body {
+  font-family: "Omnes", system-ui, sans-serif;
+}
+
+/* AQUÍ definimos tus colores corporativos para Tailwind v4 */
+@theme {
+  --color-brand-cream: #f5e6d3;
+  --color-brand-beige: #e6ccb2;
+  --color-brand-brown: #b08968;
+  --color-brand-coffee: #7f5539;
+  --color-brand-dark: #3c2a20;
+
+  --color-accent-green: #38491e;
+  --color-accent-red: #bc4749;
+
+  --font-family-sans: "Omnes", system-ui, sans-serif;
+}

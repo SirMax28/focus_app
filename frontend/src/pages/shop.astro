@@ -1,0 +1,81 @@
+---
+import '../styles/global.css';
+import ShopWheel from '../components/ShopWheel.jsx';
+import ShopItems from '../components/ShopItems.jsx';
+import UserInventory from '../components/UserInventory.jsx';
+import SideMenu from '../components/SideMenu.jsx';
+---
+
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>Tienda - Focus</title>
+	</head>
+	<body style="margin: 0; min-height: 100vh; min-height: 100dvh; font-family: 'Omnes', system-ui, sans-serif; background-image: url('/background_coffe.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+        
+        <!-- contenedor principal para asegurar mobile-first -->
+        <div style="width: 100%; max-width: 420px; min-height: 100vh; min-height: 100dvh; margin: 0 auto; display: flex; flex-direction: column; padding: 0 1.25rem;">
+            
+            <!-- Header -->
+            <header style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 0; flex-shrink: 0;">
+                <!-- Menú Hamburguesa -->
+                <SideMenu client:load />
+
+                <!-- Píldora de puntos flotante con marcos y estilo -->
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="background-color: rgba(230, 204, 178, 0.9); padding: 0.4rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.4rem; border: 1px solid #3C2A20;">
+                        <img src="/assets/coffee_bean.png" alt="" style="width: 16px; height: 16px; object-fit: contain;" />
+                        <span id="shop-points" style="font-weight: 600; font-size: 0.8rem; color: #3C2A20;">...</span>
+                    </div>
+                    <!-- Botón para poder volver al dashboard -->
+                    <a href="/dashboard" style="font-size: 1.3rem; color: #3C2A20; text-decoration: none; line-height: 1; padding: 0.25rem;">
+                        ✕
+                    </a>
+                </div>
+            </header>
+
+            <!-- Contenido principal -->
+            <main style="flex: 1; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 2rem;">
+                
+                <!-- Ruleta -->
+                <ShopWheel client:load />
+
+                <!-- separador -->
+                <div style="display: flex; justify-content: center;">
+                    <span style="background-color: #38491E; color: white; padding: 0.625rem 2rem; border-radius: 9999px; font-weight: 700; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                        Tienda de café
+                    </span>
+                </div>
+
+                <!-- items -->
+                <ShopItems client:load />
+
+                <!-- inventario -->
+                <UserInventory client:load />
+
+                <!-- Logo al final -->
+                <div style="display: flex; justify-content: center; padding: 1rem 0;">
+                    <img src="/assets/focus_logo_letras.png" alt="Focus" style="height: 40px; opacity: 0.7;" />
+                </div>
+
+            </main>
+
+        </div>
+
+        <!-- este es el script global -->
+        <script is:inline>
+            window.updatePointsDisplay = (points) => {
+                const el = document.getElementById('shop-points');
+                if(el) el.innerText = points + " +";
+            };
+
+            const token = localStorage.getItem('focus_token');
+            if(token) {
+                fetch('http://127.0.0.1:8000/auth/me', { headers: { 'Authorization': `Bearer ${token}` } })
+                .then(r => r.json())
+                .then(u => window.updatePointsDisplay(u.current_points));
+            }
+        </script>
+	</body>
+</html>

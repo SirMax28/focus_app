@@ -29,13 +29,13 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     
-# Esto le dice a FastAPI que el token viene en la cabecera "Authorization: Bearer ..."
+# token viene en la cabecera Authorization: Bearer
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
     """
     Valida el token y devuelve el usuario actual
-    si el token es falso o expira entoncs lanza error
+    en casi de qye ek token fuese falso o expira entoncs lanza error
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

@@ -1,0 +1,55 @@
+---
+import '../styles/global.css';
+import Timer from '../components/Timer.jsx';
+import SideMenu from '../components/SideMenu.jsx';
+---
+
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>Modo Foco - Focus</title>
+	</head>
+	<body style="margin: 0; min-height: 100vh; min-height: 100dvh; font-family: 'Omnes', system-ui, sans-serif; background-image: url('/background_coffe.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+        
+        <!-- Contenedor principal para asegurar mobile-first -->
+        <div style="width: 100%; max-width: 420px; min-height: 100vh; min-height: 100dvh; margin: 0 auto; display: flex; flex-direction: column; padding: 0 1.25rem;">
+            
+            <!-- Header -->
+            <header style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 0; flex-shrink: 0;">
+                <!-- Menú Hamburguesa -->
+                <SideMenu client:load />
+
+                <!-- Botón para poder volver al dashboard -->
+                <a href="/dashboard" style="font-size: 1.3rem; color: #3C2A20; text-decoration: none; line-height: 1; padding: 0.25rem;">
+                    ✕
+                </a>
+            </header>
+            
+            <!-- Píldora de puntos flotante con marcos y estilo -->
+            <div style="position: absolute; top: 1.25rem; right: 50%; transform: translateX(calc(50% + 160px)); background-color: rgba(230, 204, 178, 0.9); padding: 0.4rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.4rem; border: 1px solid #3C2A20;">
+                <img src="/assets/coffee_bean.png" alt="" style="width: 16px; height: 16px; object-fit: contain;" />
+                <span id="user-points" style="font-weight: 600; font-size: 0.8rem; color: #3C2A20;">0 +</span>
+            </div>
+
+            <!-- el componente Timer centrado en general con flex -->
+            <main style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 2rem;">
+                <Timer client:load />
+            </main>
+
+        </div>
+
+        <!-- Script para los puntos -->
+        <script>
+            const token = localStorage.getItem('focus_token');
+            if(token) {
+                fetch('http://127.0.0.1:8000/auth/me', { headers: { 'Authorization': `Bearer ${token}` } })
+                .then(r => r.json())
+                .then(u => {
+                    const el = document.getElementById('user-points');
+                    if(el) el.innerText = (u.current_points || 0) + " +";
+                });
+            }
+        </script>
+	</body>
+</html>

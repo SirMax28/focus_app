@@ -19,22 +19,32 @@ class User(SQLModel, table=True):
     # Gamificación simplificada para validar el MVP
     current_points: int = Field(default=0)
     current_streak_days: int = Field(default=0)
+    
+    #Racha
+    last_streak_date: Optional[datetime] = Field(default=None) 
 
     # Relaciones para poder navegar de usuario a sus datos facil
     profile: Optional["Profile"] = Relationship(back_populates="user")
     sessions: List["Session"] = Relationship(back_populates="user")
     goals: List["Goal"] = Relationship(back_populates="user")
+    
+    #Fecha de autoevaluación
+    last_weekly_review: Optional[datetime] = Field(default=None)
+    
+    # Inventario
+    inventory: List["UserItem"] = Relationship(back_populates="user")
+
 
 
 class Profile(SQLModel, table=True):
     """
-    Perfil motivacional del usuario (Arquetipo A, B, o C).
+    Perfil motivacional del usuario (Arquetipo A, B, C)
     Equivalente a la tabla 'profiles'.
     """
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
     
-    #el resultado del test: Competitivo, Evitador, Social
+    #el resultado del quiz de onboarding
     archetype: str 
     
     #datos extra del onboarding
@@ -46,7 +56,7 @@ class Profile(SQLModel, table=True):
 class Goal(SQLModel, table=True):
     """
     Las metas que el usuario define
-    Equivalente a la tabla 'goals' pero hardcodeada para validar el MVP
+    equivalente a la tabla 'goals' pero hardcodeada para validar el MVP
     """
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
@@ -63,8 +73,8 @@ class Goal(SQLModel, table=True):
 
 class Session(SQLModel, table=True):
     """
-    El corazón del Pomodoro que es sesion de estudio
-    Equivalente a la tabla 'sessions' pero hardcodeada para validar el MVP
+    El corazón de la sesión de estudio
+    Equivalente a la tabla 'sessions'
     """
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
@@ -81,4 +91,21 @@ class Session(SQLModel, table=True):
     abandon_reason: Optional[str] = None   # Si abandona, ¿por qué?
     
     user: Optional[User] = Relationship(back_populates="sessions")
+    
+# INVENTARIO DE ITEMS 
+class UserItem(SQLModel, table=True):
+    """
+    Registra qué items ha comprado el usuario en la tienda.
+    """
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id")
+    
+    item_id: str
+    item_name: str
+    acquired_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    # Cantidad
+    quantity: int = Field(default=1) 
+    
+    user: Optional[User] = Relationship(back_populates="inventory")
 

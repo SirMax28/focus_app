@@ -1,0 +1,436 @@
+---
+import DashboardHeader from '../components/DashboardHeader.jsx';
+import WeeklyReview from '../components/WeeklyReview.jsx';
+import SideMenu from '../components/SideMenu.jsx';
+---
+
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Home - Focus</title>
+		<style>
+			@font-face {
+				font-family: 'Omnes';
+				src: url('/fonts/Omnes-Regular.woff2') format('woff2');
+				font-weight: 400;
+			}
+			@font-face {
+				font-family: 'Omnes';
+				src: url('/fonts/Omnes-Bold.woff2') format('woff2');
+				font-weight: 700;
+			}
+			* {
+				font-family: 'Omnes', system-ui, sans-serif;
+				box-sizing: border-box;
+			}
+		</style>
+	</head>
+	<body style="
+		margin: 0; 
+		min-height: 100vh; 
+		background-color: #F5E6D3; 
+		background-image: url('/background_coffe.jpg');
+		background-size: cover;
+		background-attachment: fixed;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+	">
+		<!-- Contenedor principal mobile-first -->
+		<div style="
+			width: 100%;
+			max-width: 380px;
+			display: flex;
+			flex-direction: column;
+			gap: 0.8rem;
+		">
+			<!-- Header con menú y puntos -->
+			<div style="
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 0 0.5rem;
+			">
+				<SideMenu client:load />
+				
+				<DashboardHeader client:load />
+			</div>
+
+			<!-- Texto de semana y motivacion -->
+			<div style="text-align: center; margin: 0.3rem 0;">
+				<p id="week-title" style="
+					margin: 0;
+					font-size: 1.1rem;
+					font-weight: 600;
+					color: #3C2A20;
+				">Semana 1 - <span id="user-career">Tu carrera</span></p>
+				<p style="
+					margin: 0.2rem 0 0;
+					font-size: 0.85rem;
+					color: #7F5539;
+					font-weight: 500;
+				">Buen ritmo, no dejes que el<br/>café se enfríe</p>
+			</div>
+
+			<!-- Tarjeta principal -->
+			<a href="/pomodoro" style="
+				display: block;
+				text-decoration: none;
+				position: relative;
+				width: 100%;
+				border-radius: 20px;
+				overflow: hidden;
+				box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+			">
+				<img src="/assets/tarjet_1.png" alt="" style="
+					width: 100%;
+					height: auto;
+					display: block;
+				"/>
+				<div style="
+					position: absolute;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					padding: 1rem;
+				">
+					<div style="
+						display: flex;
+						align-items: center;
+						gap: 0.5rem;
+						margin-bottom: 0.5rem;
+					">
+						<img src="/assets/coffee_cup.png" alt="Café" style="width: 100px; height: auto;"/>
+						<div style="text-align: left;">
+							<p style="
+								margin: 0;
+								font-size: 1.3rem;
+								font-weight: 700;
+								color: #3C2A20;
+								line-height: 1.1;
+							">Siguiente<br/>bloque:</p>
+							<p id="block-minutes" style="
+								margin: 0;
+								font-weight: 700;
+								color: #3C2A20;
+								line-height: 1;
+							"><span style="font-size: 3rem;">25</span><span style="font-size: 1.3rem;">min</span></p>
+						</div>
+					</div>
+					<button style="
+						background: #38491E;
+						color: white;
+						border: none;
+						padding: 0.7rem 2rem;
+						border-radius: 20px;
+						font-size: 1rem;
+						font-weight: 600;
+						cursor: pointer;
+						width: 85%;
+					">Empezar bloque</button>
+				</div>
+			</a>
+
+			<!-- Tarjeta secundaria -->
+			<div style="position: relative;">
+				<a href="/streak" style="
+					display: block;
+					text-decoration: none;
+					position: relative;
+					width: 100%;
+					border-radius: 20px;
+					overflow: hidden;
+					box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+				">
+					<img src="/assets/tarjet_2.png" alt="" style="
+						width: 100%;
+						height: auto;
+						display: block;
+					"/>
+					<div style="
+						position: absolute;
+						top: 0;
+						left: 0;
+						right: 0;
+						bottom: 0;
+						display: flex;
+						flex-direction: column;
+						justify-content: center;
+						align-items: center;
+						padding: 1rem 1rem 1.5rem;
+					">
+						<!-- Círculo de progreso, este es el pequeño -->
+						<div style="
+							display: flex;
+							align-items: center;
+							gap: 0.8rem;
+							margin-bottom: 0.8rem;
+						">
+							<div style="
+								position: relative;
+								width: 60px;
+								height: 60px;
+							">
+								<svg width="60" height="60" style="transform: rotate(-90deg);">
+									<circle cx="30" cy="30" r="26" fill="none" stroke="#E6CCB2" stroke-width="5"/>
+									<circle id="progress-circle" cx="30" cy="30" r="26" fill="none" stroke="#7F5539" stroke-width="5" 
+										stroke-dasharray="163" stroke-dashoffset="130" stroke-linecap="round"/>
+								</svg>
+								<span id="progress-percent" style="
+									position: absolute;
+									top: 50%;
+									left: 50%;
+									transform: translate(-50%, -50%);
+									font-size: 0.9rem;
+									font-weight: 700;
+									color: #3C2A20;
+								">20%</span>
+							</div>
+							<div>
+								<p style="margin: 0; font-size: 0.95rem; font-weight: 600; color: #3C2A20;">
+									Progreso de la semana
+								</p>
+								<p id="progress-text" style="margin: 0; font-size: 0.8rem; color: #7F5539;">20%</p>
+							</div>
+						</div>
+
+						<!-- para mostrar los dias de la semana -->
+						<div style="
+							display: flex;
+							justify-content: center;
+							gap: 0.4rem;
+							margin-bottom: 0.3rem;
+						">
+							<span style="width: 28px; text-align: center; font-size: 0.75rem; color: #3C2A20; font-weight: 600;">L</span>
+							<span style="width: 28px; text-align: center; font-size: 0.75rem; color: #3C2A20; font-weight: 600;">M</span>
+							<span style="width: 28px; text-align: center; font-size: 0.75rem; color: #3C2A20; font-weight: 600;">X</span>
+							<span style="width: 28px; text-align: center; font-size: 0.75rem; color: #3C2A20; font-weight: 600;">J</span>
+							<span style="width: 28px; text-align: center; font-size: 0.75rem; color: #3C2A20; font-weight: 600;">V</span>
+							<span style="width: 28px; text-align: center; font-size: 0.75rem; color: #3C2A20; font-weight: 600;">S</span>
+							<span style="width: 28px; text-align: center; font-size: 0.75rem; color: #3C2A20; font-weight: 600;">D</span>
+						</div>
+						<!-- tazas de cafe -->
+						<div id="week-cups" style="
+							display: flex;
+							justify-content: center;
+							gap: 0.4rem;
+						">
+							<!-- Cups se cargan dinámicamente -->
+						</div>
+					</div>
+				</a>
+				
+				<!-- Badge de racha -->
+				<div id="streak-badge" style="
+					position: absolute;
+					bottom: -12px;
+					left: 50%;
+					transform: translateX(-50%);
+					background: #38491E;
+					color: white;
+					padding: 0.35rem 1.2rem;
+					border-radius: 15px;
+					font-size: 0.85rem;
+					font-weight: 600;
+					white-space: nowrap;
+					z-index: 10;
+				">0 días de racha</div>
+			</div>
+
+			<!-- Banner de puntos -->
+			<a href="/shop" style="
+				display: flex;
+				align-items: center;
+				gap: 0.6rem;
+				background: rgba(255, 255, 255, 0.85);
+				padding: 0.6rem 1rem;
+				border-radius: 25px;
+				border: 1.5px solid #3C2A20;
+				text-decoration: none;
+				margin-top: 0.5rem;
+			">
+				<img src="/assets/coffee_bean.png" alt="" style="width: 22px; height: 22px;"/>
+				<span style="color: #3C2A20; font-size: 0.85rem; font-weight: 500;">
+					Tus granos de café están listos para canjearse
+				</span>
+			</a>
+
+			<!-- Texto motivacional ARCS -->
+			<p style="
+				text-align: center;
+				color: #7F5539;
+				font-size: 0.8rem;
+				margin: 0.3rem 0;
+				font-style: italic;
+			">Cada vez más cerca de tu objetivo</p>
+
+			<!-- Logo -->
+			<div style="text-align: center;">
+				<img src="/assets/focus_logo_letras.png" alt="Focus" style="height: 35px;"/>
+			</div>
+		</div>
+
+		<!-- Modal de review semanal -->
+		<WeeklyReview client:load />
+
+		<script>
+			// Script para cargar datos dinámicos
+			document.addEventListener('DOMContentLoaded', async () => {
+				const token = localStorage.getItem('focus_token');
+				if (!token) return;
+
+				try {
+					// Obtiene datos del usuario
+					const userRes = await fetch('http://127.0.0.1:8000/auth/me', {
+						headers: { 'Authorization': `Bearer ${token}` }
+					});
+					const user = await userRes.json();
+
+					// Actualiza racha
+					const streakBadge = document.getElementById('streak-badge');
+					if (streakBadge) {
+						streakBadge.textContent = `${user.current_streak_days || 0} días de racha`;
+					}
+
+					// Obtiene perfil para la carrera
+					const profileRes = await fetch('http://127.0.0.1:8000/users/my-profile', {
+						headers: { 'Authorization': `Bearer ${token}` }
+					});
+					if (profileRes.ok) {
+						const profile = await profileRes.json();
+						const careerEl = document.getElementById('user-career');
+						if (careerEl && profile.career) {
+							careerEl.textContent = profile.career;
+						}
+						//guarda arquetipo
+						if (profile.archetype) {
+							localStorage.setItem('focus_archetype', profile.archetype);
+						}
+					}
+
+					// en base al arquetipo se define minutos del bloque automáticamente
+					const archetype = localStorage.getItem('focus_archetype') || 'B';
+					const archetypeMinutes: Record<string, number> = { A: 15, B: 25, C: 40 };
+					const minutes = archetypeMinutes[archetype] || 25;
+					const blockMinutes = document.getElementById('block-minutes');
+					if (blockMinutes) {
+						blockMinutes.innerHTML = `<span style="font-size: 3rem;">${minutes}</span><span style="font-size: 1.3rem;">min</span>`;
+					}
+
+					// se calcula la semana del año
+					const now = new Date();
+					const startOfYear = new Date(now.getFullYear(), 0, 1);
+					const weekNumber = Math.ceil(((now.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay()) / 7);
+					const weekTitle = document.getElementById('week-title');
+					if (weekTitle) {
+						const career = document.getElementById('user-career')?.textContent || 'Tu carrera';
+						weekTitle.innerHTML = `Semana ${weekNumber} - <span id="user-career">${career}</span>`;
+					}
+
+					// obtiene las sesiones de la semana para el progreso
+					const sessionsRes = await fetch('http://127.0.0.1:8000/sessions/weekly-stats', {
+						headers: { 'Authorization': `Bearer ${token}` }
+					});
+					
+					if (sessionsRes.ok) {
+						const stats = await sessionsRes.json();
+						const daysCompleted = stats.days_with_sessions || 0;
+						const progress = Math.round((daysCompleted / 7) * 100);
+						
+						// se actualiza el porcentaje de progreso
+						const progressPercent = document.getElementById('progress-percent');
+						const progressText = document.getElementById('progress-text');
+						if (progressPercent) progressPercent.textContent = `${progress}%`;
+						if (progressText) progressText.textContent = `${progress}%`;
+
+						// Actualizar círculo SVG ( en base a circunferencia = 2 * PI * 26 ≈ 163)
+						const progressCircle = document.getElementById('progress-circle') as HTMLElement | null;
+						if (progressCircle) {
+							const circumference = 163;
+							const offset = circumference - (progress / 100) * circumference;
+							progressCircle.style.strokeDashoffset = String(offset);
+						}
+
+						// Actualiza cups de la semana con tazas de café
+						const weekCups = document.getElementById('week-cups');
+						if (weekCups && stats.daily_breakdown) {
+							weekCups.innerHTML = stats.daily_breakdown.map((day: { completed: boolean }) => `
+								<div style="
+									width: 28px;
+									height: 28px;
+									border-radius: 50%;
+									border: 2px solid #3C2A20;
+									background: ${day.completed ? '#5D4037' : '#FFF8E7'};
+									display: flex;
+									align-items: center;
+									justify-content: center;
+									position: relative;
+								">
+									${day.completed ? '<span style="color: white; font-size: 0.6rem;">✓</span>' : '<span style="font-size: 0.5rem;">☕</span>'}
+								</div>
+							`).join('');
+						} else if (weekCups) {
+							// Default cups si no hay datos
+							weekCups.innerHTML = Array(7).fill(0).map(() => `
+								<div style="
+									width: 28px;
+									height: 28px;
+									border-radius: 50%;
+									border: 2px solid #3C2A20;
+									background: #FFF8E7;
+									display: flex;
+									align-items: center;
+									justify-content: center;
+								">
+									<span style="font-size: 0.5rem;">☕</span>
+								</div>
+							`).join('');
+						}
+					} else {
+						// Si no hay endpoint se muestran cups sin nada
+						const weekCups = document.getElementById('week-cups');
+						if (weekCups) {
+							weekCups.innerHTML = Array(7).fill(0).map(() => `
+								<div style="
+									width: 28px;
+									height: 28px;
+									border-radius: 50%;
+									border: 2px solid #3C2A20;
+									background: #FFF8E7;
+									display: flex;
+									align-items: center;
+									justify-content: center;
+								">
+									<span style="font-size: 0.5rem;">☕</span>
+								</div>
+							`).join('');
+						}
+					}
+				} catch (error) {
+					console.error('Error cargando dashboard:', error);
+					// Fallback para las tazas
+					const weekCups = document.getElementById('week-cups');
+					if (weekCups) {
+						weekCups.innerHTML = Array(7).fill(0).map(() => `
+							<div style="
+								width: 28px;
+								height: 28px;
+								border-radius: 50%;
+								border: 2px solid #3C2A20;
+								background: #FFF8E7;
+							"></div>
+						`).join('');
+					}
+				}
+			});
+		</script>
+	</body>
+</html>
