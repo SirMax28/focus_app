@@ -24,6 +24,7 @@ class UserRegister(BaseModel):
     email: str
     password: str
     full_name: str
+    career: str
 
 class Token(BaseModel):
     access_token: str
@@ -70,10 +71,12 @@ def register_user(user_data: UserRegister, session: Session = Depends(get_sessio
         raise HTTPException(status_code=400, detail="Email ya registrado")
     
     # Hashea y guarda
+    career_capitalized = user_data.career.strip().capitalize() if user_data.career else "Mi carrera"
     new_user = User(
         email=user_data.email,
         password_hash=get_password_hash(user_data.password),
-        full_name=user_data.full_name
+        full_name=user_data.full_name,
+        career=career_capitalized[:30] 
     )
     session.add(new_user)
     session.commit()

@@ -300,16 +300,18 @@ import SideMenu from '../components/SideMenu.jsx';
 						streakBadge.textContent = `${user.current_streak_days || 0} días de racha`;
 					}
 
-					// Obtiene perfil para la carrera
+					// Muestra la carrera del usuario
+					const careerEl = document.getElementById('user-career');
+					if (careerEl && user.career) {
+						careerEl.textContent = user.career;
+					}
+
+					// Obtiene perfil para el arquetipo
 					const profileRes = await fetch(`${apiUrl}/users/my-profile`, {
 						headers: { 'Authorization': `Bearer ${token}` }
 					});
 					if (profileRes.ok) {
 						const profile = await profileRes.json();
-						const careerEl = document.getElementById('user-career');
-						if (careerEl && profile.career) {
-							careerEl.textContent = profile.career;
-						}
 						//guarda arquetipo
 						if (profile.archetype) {
 							localStorage.setItem('focus_archetype', profile.archetype);
@@ -331,7 +333,7 @@ import SideMenu from '../components/SideMenu.jsx';
 					const weekNumber = Math.ceil(((now.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay()) / 7);
 					const weekTitle = document.getElementById('week-title');
 					if (weekTitle) {
-						const career = document.getElementById('user-career')?.textContent || 'Tu carrera';
+						const career = user.career || 'Tu carrera';
 						weekTitle.innerHTML = `Semana ${weekNumber} - <span id="user-career">${career}</span>`;
 					}
 

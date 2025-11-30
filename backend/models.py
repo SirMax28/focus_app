@@ -14,6 +14,7 @@ class User(SQLModel, table=True):
     email: str = Field(index=True, unique=True)
     password_hash: str
     full_name: str
+    career: str = Field(default="Mi carrera", max_length=30) 
     created_at: datetime = Field(default_factory=datetime.utcnow)
     
     # Gamificación simplificada para validar el MVP

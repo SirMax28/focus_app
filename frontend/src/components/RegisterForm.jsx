@@ -8,6 +8,7 @@ export default function RegisterForm() {
   const [formData, setFormData] = useState({
     email: "",
     full_name: "",
+    career: "",
     password: "",
     confirmPassword: "",
   });
@@ -36,6 +37,7 @@ export default function RegisterForm() {
         body: JSON.stringify({
           email: formData.email,
           full_name: formData.full_name,
+          career: formData.career,
           password: formData.password,
         }),
       });
@@ -162,6 +164,16 @@ export default function RegisterForm() {
         onChange={(e) =>
           setFormData({ ...formData, full_name: e.target.value })
         }
+      />
+
+      {/* Campo Carrera */}
+      <input
+        type="text"
+        required
+        maxLength={30}
+        style={inputStyle}
+        placeholder="Carrera (ej: Ingeniería, Medicina...)"
+        onChange={(e) => setFormData({ ...formData, career: e.target.value })}
       />
 
       {/* Campo Email */}
