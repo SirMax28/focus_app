@@ -1,5 +1,8 @@
 import { useState, useRef } from "react";
 
+// URL del API - cambia automáticamente entre desarrollo y producción
+const API = import.meta.env.PUBLIC_API_URL || "";
+
 // La ruleta tiene 8 segmentos y esta es su configuración
 // se mezclan colores y tipos de recompensa
 const SEGMENTS = [
@@ -27,7 +30,7 @@ export default function ShopWheel() {
     setIsSpinning(true);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/gamification/spin", {
+      const res = await fetch(`${API}/gamification/spin`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 
+// URL del API - cambia automáticamente entre desarrollo y producción
+const API = import.meta.env.PUBLIC_API_URL || "";
+
 export default function DashboardHeader() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +17,7 @@ export default function DashboardHeader() {
     }
 
     //se obtiene la info del usuario
-    fetch("http://127.0.0.1:8000/auth/me", {
+    fetch(`${API}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
@@ -25,7 +28,7 @@ export default function DashboardHeader() {
         setUser(userData);
 
         //verifica si el usuario tiene perfil
-        return fetch("http://127.0.0.1:8000/users/my-profile", {
+        return fetch(`${API}/users/my-profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       })

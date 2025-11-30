@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+// URL del API - cambia automáticamente entre desarrollo y producción
+const API = import.meta.env.PUBLIC_API_URL || "";
+
 export default function StreakView() {
   const [streak, setStreak] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -7,7 +10,7 @@ export default function StreakView() {
   useEffect(() => {
     const token = localStorage.getItem("focus_token");
     if (token) {
-      fetch("http://127.0.0.1:8000/auth/me", {
+      fetch(`${API}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((r) => r.json())

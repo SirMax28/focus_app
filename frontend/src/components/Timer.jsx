@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { playSound } from "../utils/audio";
 
+// URL del API - cambia automáticamente entre desarrollo y producción
+const API = import.meta.env.PUBLIC_API_URL || "";
+
 export default function Timer() {
   const [selectedMinutes, setSelectedMinutes] = useState(25);
   const [timeLeft, setTimeLeft] = useState(25 * 60);
@@ -92,7 +95,7 @@ export default function Timer() {
     if (!token) return;
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/sessions/complete", {
+      const response = await fetch(`${API}/sessions/complete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +103,7 @@ export default function Timer() {
         },
         body: JSON.stringify({
           // Se envia el tiempo seleccionado y la etiqueta
-          duration_minutes: selectedMinutes, 
+          duration_minutes: selectedMinutes,
           label: label,
         }),
       });

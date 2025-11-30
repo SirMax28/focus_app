@@ -289,7 +289,7 @@ import SideMenu from '../components/SideMenu.jsx';
 
 				try {
 					// Obtiene datos del usuario
-					const userRes = await fetch('http://127.0.0.1:8000/auth/me', {
+					const userRes = await fetch('/auth/me', {
 						headers: { 'Authorization': `Bearer ${token}` }
 					});
 					const user = await userRes.json();
@@ -301,7 +301,7 @@ import SideMenu from '../components/SideMenu.jsx';
 					}
 
 					// Obtiene perfil para la carrera
-					const profileRes = await fetch('http://127.0.0.1:8000/users/my-profile', {
+					const profileRes = await fetch('/users/my-profile', {
 						headers: { 'Authorization': `Bearer ${token}` }
 					});
 					if (profileRes.ok) {
@@ -336,7 +336,7 @@ import SideMenu from '../components/SideMenu.jsx';
 					}
 
 					// obtiene las sesiones de la semana para el progreso
-					const sessionsRes = await fetch('http://127.0.0.1:8000/sessions/weekly-stats', {
+					const sessionsRes = await fetch('/sessions/weekly-stats', {
 						headers: { 'Authorization': `Bearer ${token}` }
 					});
 					

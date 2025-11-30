@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 
+// URL del API - cambia automáticamente entre desarrollo y producción
+const API = import.meta.env.PUBLIC_API_URL || "";
+
 export default function WeeklyReview() {
   const [isVisible, setIsVisible] = useState(false);
   const [currentArchetype, setCurrentArchetype] = useState("B");
@@ -7,9 +10,24 @@ export default function WeeklyReview() {
 
   // Configuración de arquetipos y sus transiciones
   const archetypeConfig = {
-    A: { minutes: 15, down: null, up: { archetype: "B", minutes: 25 }, upMore: { archetype: "C", minutes: 40 } },
-    B: { minutes: 25, down: { archetype: "A", minutes: 15 }, up: { archetype: "C", minutes: 40 }, upMore: null },
-    C: { minutes: 40, down: { archetype: "B", minutes: 25 }, up: null, upMore: null }
+    A: {
+      minutes: 15,
+      down: null,
+      up: { archetype: "B", minutes: 25 },
+      upMore: { archetype: "C", minutes: 40 },
+    },
+    B: {
+      minutes: 25,
+      down: { archetype: "A", minutes: 15 },
+      up: { archetype: "C", minutes: 40 },
+      upMore: null,
+    },
+    C: {
+      minutes: 40,
+      down: { archetype: "B", minutes: 25 },
+      up: null,
+      upMore: null,
+    },
   };
 
   useEffect(() => {
@@ -23,12 +41,9 @@ export default function WeeklyReview() {
       setCurrentMinutes(archetypeConfig[savedArchetype]?.minutes || 25);
 
       try {
-        const res = await fetch(
-          "http://127.0.0.1:8000/users/check-weekly-review",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const res = await fetch(`${API}/users/check-weekly-review`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const data = await res.json();
 
         if (data.due) {
@@ -63,7 +78,7 @@ export default function WeeklyReview() {
     }
 
     const token = localStorage.getItem("focus_token");
-    await fetch("http://127.0.0.1:8000/users/update-plan", {
+    await fetch(`${API}/users/update-plan`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -135,7 +150,8 @@ export default function WeeklyReview() {
             margin: "0 0 0.5rem 0",
           }}
         >
-          Actualmente estudias en bloques de <strong>{currentMinutes} minutos</strong>.
+          Actualmente estudias en bloques de{" "}
+          <strong>{currentMinutes} minutos</strong>.
         </p>
 
         <p

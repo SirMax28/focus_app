@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+// URL del API - cambia automáticamente entre desarrollo y producción
+const API = import.meta.env.PUBLIC_API_URL || "";
+
 export default function RegisterForm() {
   // los estados donde se guardan los datos del formulario
   const [formData, setFormData] = useState({
@@ -27,7 +30,7 @@ export default function RegisterForm() {
     setStatus("loading");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/register", {
+      const response = await fetch(`${API}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

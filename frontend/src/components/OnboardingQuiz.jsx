@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+// URL del API - cambia automáticamente entre desarrollo y producción
+const API = import.meta.env.PUBLIC_API_URL || "";
+
 // Preguntas para el onboarding quiz
 const questions = [
   {
@@ -73,7 +76,7 @@ export default function OnboardingQuiz() {
     if (step < questions.length - 1) {
       setStep((prev) => prev + 1);
     } else {
-      finishQuiz(option.value || preferredMinutes); 
+      finishQuiz(option.value || preferredMinutes);
     }
   };
 
@@ -93,7 +96,7 @@ export default function OnboardingQuiz() {
     // Envia al Backend
     try {
       const token = localStorage.getItem("focus_token");
-      const response = await fetch("http://127.0.0.1:8000/users/onboarding", {
+      const response = await fetch(`${API}/users/onboarding`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

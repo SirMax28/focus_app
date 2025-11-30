@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 
+// URL del API - cambia automáticamente entre desarrollo y producción
+const API = import.meta.env.PUBLIC_API_URL || "";
+
 export default function SideMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -8,7 +11,7 @@ export default function SideMenu() {
     // Carga datos de usuario
     const token = localStorage.getItem("focus_token");
     if (token) {
-      fetch("http://127.0.0.1:8000/auth/me", {
+      fetch(`${API}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())

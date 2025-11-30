@@ -1,9 +1,12 @@
 import { useState } from "react";
 
+// URL del API - cambia automáticamente entre desarrollo y producción
+const API = import.meta.env.PUBLIC_API_URL || "";
+
 export default function LoginForm() {
   const [formData, setFormData] = useState({
     // FastAPI usa username para el login pero es email, linea furuta para agregar inicio con username
-    username: "", 
+    username: "",
     password: "",
   });
   const [status, setStatus] = useState("idle");
@@ -20,7 +23,7 @@ export default function LoginForm() {
     formBody.append("password", formData.password);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/login", {
+      const response = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -39,7 +42,7 @@ export default function LoginForm() {
 
       setStatus("success");
       setTimeout(() => {
-        window.location.href = "/dashboard"; 
+        window.location.href = "/dashboard";
       }, 1000);
     } catch (err) {
       setStatus("error");

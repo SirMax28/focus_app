@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { playSound } from '../utils/audio';
+import { playSound } from "../utils/audio";
+
+// URL del API - cambia automáticamente entre desarrollo y producción
+const API = import.meta.env.PUBLIC_API_URL || "";
 
 const ITEMS = [
   {
@@ -52,7 +55,7 @@ export default function ShopItems() {
     if (!confirm(`¿Comprar ${item.name} por ${item.price} granos?`)) return;
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/gamification/buy", {
+      const res = await fetch(`${API}/gamification/buy`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +74,7 @@ export default function ShopItems() {
         alert(data.detail || "No te alcanza el dinero 💸");
       } else {
         alert(`¡Comprado! ${data.message}`);
-        playSound('money');
+        playSound("money");
 
         if (window.updatePointsDisplay) {
           window.updatePointsDisplay(data.new_balance);
