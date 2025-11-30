@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from database import create_db_and_tables
+import os
 
 #Router
 from routers import auth, users, sessions, gamification 
@@ -20,7 +21,10 @@ from fastapi.middleware.cors import CORSMiddleware
 origins = [
     "http://localhost:4321",
     "http://127.0.0.1:4321",
+    os.getenv("FRONTEND_URL", ""),
 ]
+# Filtra valores vacíos
+origins = [o for o in origins if o]
 
 app.add_middleware(
     CORSMiddleware,
