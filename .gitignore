@@ -557,3 +557,5 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # End of https://www.toptal.com/developers/gitignore/api/git,python,node,venv,astro,react,reactnative
+# Frontend env files
+frontend/.env*
