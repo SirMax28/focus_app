@@ -12,6 +12,7 @@ export default function Timer() {
   const [label, setLabel] = useState("Estudio");
   const [quote, setQuote] = useState("Preparando tu café...");
   const [isInitialized, setIsInitialized] = useState(false);
+  const [sessionResult, setSessionResult] = useState(null);
 
   const timerRef = useRef(null);
   const quoteRef = useRef(null);
@@ -113,17 +114,22 @@ export default function Timer() {
         console.log(`¡Ganaste ${data.points_earned} puntos!`);
         //  puntos nuevos en localStorage para actualizar el header más rapido
         localStorage.setItem("cached_points", data.new_total_points);
-        //logica de redirección
-        if (data.first_session_of_day) {
-          //cuando es el primer dia se muestra el componente de racha
-          window.location.href = "/streak";
-        } else {
-          // Si ya estudió hoy vuelta normal al pomodoro para seguir estudiando
-          window.location.href = "/pomodoro";
-        }
+        // Guardamos el resultado para mostrarlo y usarlo al redirigir
+        setSessionResult(data);
       }
     } catch (error) {
       console.error("Error guardando sesión:", error);
+    }
+  };
+
+  // Función para reclamar recompensa y redirigir
+  const claimReward = () => {
+    if (sessionResult?.first_session_of_day) {
+      // Primera sesión del día, mostrar racha
+      window.location.href = "/streak";
+    } else {
+      // Ya estudió hoy, volver al dashboard
+      window.location.href = "/dashboard";
     }
   };
 
@@ -442,23 +448,45 @@ export default function Timer() {
 
         {/* botón al completar */}
         {sessionStatus === "completed" && (
-          <button
-            onClick={() => (window.location.href = "/dashboard")}
+          <div
             style={{
-              backgroundColor: "#38491E",
-              color: "#E8E4D9",
-              fontWeight: "600",
-              fontSize: "1.125rem",
-              padding: "0.875rem 2.5rem",
-              borderRadius: "9999px",
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-              fontFamily: "'Omnes', system-ui, sans-serif",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "0.75rem",
             }}
           >
-            Recoger Recompensa
-          </button>
+            {sessionResult && (
+              <p
+                style={{
+                  fontSize: "1.25rem",
+                  fontWeight: "600",
+                  color: "#38491E",
+                  margin: "0",
+                  fontFamily: "'Omnes', system-ui, sans-serif",
+                }}
+              >
+                +{sessionResult.points_earned} puntos ☕
+              </p>
+            )}
+            <button
+              onClick={claimReward}
+              style={{
+                backgroundColor: "#38491E",
+                color: "#E8E4D9",
+                fontWeight: "600",
+                fontSize: "1.125rem",
+                padding: "0.875rem 2.5rem",
+                borderRadius: "9999px",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                fontFamily: "'Omnes', system-ui, sans-serif",
+              }}
+            >
+              Recoger Recompensa
+            </button>
+          </div>
         )}
       </div>
     </div>

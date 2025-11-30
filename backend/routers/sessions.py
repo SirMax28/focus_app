@@ -38,11 +38,6 @@ def complete_session(
     )
     session.add(new_session)
     
-    #actualiza la billetera del usuario
-    current_user.current_points += points_earned
-    #aumenta la racha de dias estudiados
-    current_user.current_streak_days += 1 
-    
     #LÓGICA DE RACHA
     today = datetime.utcnow().date()
     last_date = current_user.last_streak_date.date() if current_user.last_streak_date else None
@@ -69,7 +64,7 @@ def complete_session(
         # Bonus, se da puntos extra por mantener racha
         points_earned += 50 
     
-    # actualiza usuario
+    # actualiza puntos del usuario
     current_user.current_points += points_earned
     session.add(current_user)
     session.commit()
