@@ -182,23 +182,23 @@ import SideMenu from '../components/SideMenu.jsx';
 								<svg width="60" height="60" style="transform: rotate(-90deg);">
 									<circle cx="30" cy="30" r="26" fill="none" stroke="#E6CCB2" stroke-width="5"/>
 									<circle id="progress-circle" cx="30" cy="30" r="26" fill="none" stroke="#7F5539" stroke-width="5" 
-										stroke-dasharray="163" stroke-dashoffset="130" stroke-linecap="round"/>
+										stroke-dasharray="163" stroke-dashoffset="163" stroke-linecap="round"/>
 								</svg>
 								<span id="progress-percent" style="
 									position: absolute;
 									top: 50%;
 									left: 50%;
 									transform: translate(-50%, -50%);
-									font-size: 0.9rem;
+									font-size: 0.75rem;
 									font-weight: 700;
 									color: #3C2A20;
-								">20%</span>
+								">0/7</span>
 							</div>
 							<div>
 								<p style="margin: 0; font-size: 0.95rem; font-weight: 600; color: #3C2A20;">
 									Progreso de la semana
 								</p>
-								<p id="progress-text" style="margin: 0; font-size: 0.8rem; color: #7F5539;">20%</p>
+								<p id="progress-text" style="margin: 0; font-size: 0.8rem; color: #7F5539;">¡Sigue así!</p>
 							</div>
 						</div>
 
@@ -281,7 +281,7 @@ import SideMenu from '../components/SideMenu.jsx';
 		<!-- Modal de review semanal -->
 		<WeeklyReview client:load />
 
-		<script>
+		<script is:inline define:vars={{ apiUrl: import.meta.env.PUBLIC_API_URL || '' }}>
 			// Script para cargar datos dinámicos
 			document.addEventListener('DOMContentLoaded', async () => {
 				const token = localStorage.getItem('focus_token');
@@ -289,7 +289,7 @@ import SideMenu from '../components/SideMenu.jsx';
 
 				try {
 					// Obtiene datos del usuario
-					const userRes = await fetch('/auth/me', {
+					const userRes = await fetch(`${apiUrl}/auth/me`, {
 						headers: { 'Authorization': `Bearer ${token}` }
 					});
 					const user = await userRes.json();
@@ -301,7 +301,7 @@ import SideMenu from '../components/SideMenu.jsx';
 					}
 
 					// Obtiene perfil para la carrera
-					const profileRes = await fetch('/users/my-profile', {
+					const profileRes = await fetch(`${apiUrl}/users/my-profile`, {
 						headers: { 'Authorization': `Bearer ${token}` }
 					});
 					if (profileRes.ok) {
@@ -318,7 +318,7 @@ import SideMenu from '../components/SideMenu.jsx';
 
 					// en base al arquetipo se define minutos del bloque automáticamente
 					const archetype = localStorage.getItem('focus_archetype') || 'B';
-					const archetypeMinutes: Record<string, number> = { A: 15, B: 25, C: 40 };
+					const archetypeMinutes = { A: 15, B: 25, C: 40 };
 					const minutes = archetypeMinutes[archetype] || 25;
 					const blockMinutes = document.getElementById('block-minutes');
 					if (blockMinutes) {
@@ -336,7 +336,7 @@ import SideMenu from '../components/SideMenu.jsx';
 					}
 
 					// obtiene las sesiones de la semana para el progreso
-					const sessionsRes = await fetch('/sessions/weekly-stats', {
+					const sessionsRes = await fetch(`${apiUrl}/sessions/weekly-stats`, {
 						headers: { 'Authorization': `Bearer ${token}` }
 					});
 					
@@ -344,74 +344,84 @@ import SideMenu from '../components/SideMenu.jsx';
 						const stats = await sessionsRes.json();
 						const daysCompleted = stats.days_with_sessions || 0;
 						const progress = Math.round((daysCompleted / 7) * 100);
+						const currentDayIndex = stats.current_day_index; // Del backend
+						const dailyBreakdown = stats.daily_breakdown || [];
 						
-						// se actualiza el porcentaje de progreso
+						// círculo con X/7 dias de formato
 						const progressPercent = document.getElementById('progress-percent');
 						const progressText = document.getElementById('progress-text');
-						if (progressPercent) progressPercent.textContent = `${progress}%`;
-						if (progressText) progressText.textContent = `${progress}%`;
+						if (progressPercent) progressPercent.textContent = `${daysCompleted}/7`;
+						if (progressText) {
+							if (daysCompleted === 0) progressText.textContent = '¡Empieza hoy!';
+							else if (daysCompleted < 3) progressText.textContent = '¡Buen inicio!';
+							else if (daysCompleted < 5) progressText.textContent = '¡Vas muy bien!';
+							else if (daysCompleted < 7) progressText.textContent = '¡Casi perfecto!';
+							else progressText.textContent = '¡Semana perfecta! 🔥';
+						}
 
 						// Actualizar círculo SVG ( en base a circunferencia = 2 * PI * 26 ≈ 163)
-						const progressCircle = document.getElementById('progress-circle') as HTMLElement | null;
+						const progressCircle = document.getElementById('progress-circle');
 						if (progressCircle) {
 							const circumference = 163;
 							const offset = circumference - (progress / 100) * circumference;
 							progressCircle.style.strokeDashoffset = String(offset);
 						}
 
-						// Actualiza cups de la semana con tazas de café
-						const weekCups = document.getElementById('week-cups');
-						if (weekCups && stats.daily_breakdown) {
-							weekCups.innerHTML = stats.daily_breakdown.map((day: { completed: boolean }) => `
-								<div style="
-									width: 28px;
-									height: 28px;
-									border-radius: 50%;
-									border: 2px solid #3C2A20;
-									background: ${day.completed ? '#5D4037' : '#FFF8E7'};
-									display: flex;
-									align-items: center;
-									justify-content: center;
-									position: relative;
-								">
-									${day.completed ? '<span style="color: white; font-size: 0.6rem;">✓</span>' : '<span style="font-size: 0.5rem;">☕</span>'}
-								</div>
-							`).join('');
-						} else if (weekCups) {
-							// Default cups si no hay datos
-							weekCups.innerHTML = Array(7).fill(0).map(() => `
-								<div style="
-									width: 28px;
-									height: 28px;
-									border-radius: 50%;
-									border: 2px solid #3C2A20;
-									background: #FFF8E7;
-									display: flex;
-									align-items: center;
-									justify-content: center;
-								">
-									<span style="font-size: 0.5rem;">☕</span>
-								</div>
-							`).join('');
-						}
-					} else {
-						// Si no hay endpoint se muestran cups sin nada
+						// Actualiza cups
 						const weekCups = document.getElementById('week-cups');
 						if (weekCups) {
-							weekCups.innerHTML = Array(7).fill(0).map(() => `
-								<div style="
-									width: 28px;
-									height: 28px;
-									border-radius: 50%;
-									border: 2px solid #3C2A20;
-									background: #FFF8E7;
-									display: flex;
-									align-items: center;
-									justify-content: center;
-								">
-									<span style="font-size: 0.5rem;">☕</span>
-								</div>
-							`).join('');
+							weekCups.innerHTML = dailyBreakdown.map((day, index) => {
+								const isActive = index === currentDayIndex;
+								const isCompleted = day.completed;
+								const isPast = index < currentDayIndex;
+								
+								return `
+									<div style="
+										width: 28px;
+										height: 28px;
+										border-radius: 50%;
+										display: flex;
+										align-items: center;
+										justify-content: center;
+										background-color: ${isCompleted ? 'transparent' : '#E6CCB2'};
+										border: ${isActive ? '2px solid #38491E' : 'none'};
+										transform: ${isActive ? 'scale(1.15)' : 'scale(1)'};
+										box-shadow: ${isActive ? '0 2px 8px rgba(56, 73, 30, 0.3)' : 'none'};
+									">
+										${isCompleted ? `<img src="/assets/coffe_circle.png" alt="" style="width: 100%; height: 100%; object-fit: contain; opacity: ${isPast ? '0.7' : '1'};" />` : ''}
+									</div>
+								`;
+							}).join('');
+						}
+					} else {
+						//si no hay respuesta del endpoint mostramos cups estilo StreakView sin datos
+						const weekCups = document.getElementById('week-cups');
+						if (weekCups) {
+							const jsDay = new Date().getDay();
+							const currentDayIndex = jsDay === 0 ? 6 : jsDay - 1;
+							
+							weekCups.innerHTML = Array(7).fill(0).map((_, index) => {
+								const isActive = index === currentDayIndex;
+								const isPast = index < currentDayIndex;
+								const isCompleted = isPast || isActive;
+								
+								return `
+									<div style="
+										width: 28px;
+										height: 28px;
+										border-radius: 50%;
+										display: flex;
+										align-items: center;
+										justify-content: center;
+										background-color: ${isCompleted ? 'transparent' : '#E6CCB2'};
+										border: ${isActive ? '2px solid #38491E' : 'none'};
+										transform: ${isActive ? 'scale(1.15)' : 'scale(1)'};
+										box-shadow: ${isActive ? '0 2px 8px rgba(56, 73, 30, 0.3)' : 'none'};
+									">
+										${isCompleted ? `<img src="/assets/coffe_circle.png" alt="" style="width: 100%; height: 100%; object-fit: contain; opacity: ${isPast ? '0.7' : '1'};" />` : ''}
+									</div>
+								`;
+							}).join('');
 						}
 					}
 				} catch (error) {
@@ -419,15 +429,31 @@ import SideMenu from '../components/SideMenu.jsx';
 					// Fallback para las tazas
 					const weekCups = document.getElementById('week-cups');
 					if (weekCups) {
-						weekCups.innerHTML = Array(7).fill(0).map(() => `
-							<div style="
-								width: 28px;
-								height: 28px;
-								border-radius: 50%;
-								border: 2px solid #3C2A20;
-								background: #FFF8E7;
-							"></div>
-						`).join('');
+						const jsDay = new Date().getDay();
+						const currentDayIndex = jsDay === 0 ? 6 : jsDay - 1;
+						
+						weekCups.innerHTML = Array(7).fill(0).map((_, index) => {
+							const isActive = index === currentDayIndex;
+							const isPast = index < currentDayIndex;
+							const isCompleted = isPast || isActive;
+							
+							return `
+								<div style="
+									width: 28px;
+									height: 28px;
+									border-radius: 50%;
+									display: flex;
+									align-items: center;
+									justify-content: center;
+									background-color: ${isCompleted ? 'transparent' : '#E6CCB2'};
+									border: ${isActive ? '2px solid #38491E' : 'none'};
+									transform: ${isActive ? 'scale(1.15)' : 'scale(1)'};
+									box-shadow: ${isActive ? '0 2px 8px rgba(56, 73, 30, 0.3)' : 'none'};
+								">
+									${isCompleted ? `<img src="/assets/coffe_circle.png" alt="" style="width: 100%; height: 100%; object-fit: contain; opacity: ${isPast ? '0.7' : '1'};" />` : ''}
+								</div>
+							`;
+						}).join('');
 					}
 				}
 			});

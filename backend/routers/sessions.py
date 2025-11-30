@@ -13,6 +13,58 @@ class SessionCompleted(BaseModel):
     duration_minutes: int
     label: str = "Estudio"
 
+
+#ENDPOINT: ESTADÍSTICAS SEMANALES
+@router.get("/weekly-stats")
+def get_weekly_stats(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Devuelve las estadísticas de la semana actual.
+    - days_with_sessions es cuántos días tuvo al menos una sesión
+    - daily_breakdown trae un array de 7 elementos [L,M,X,J,V,S,D] con {completed: bool} asi indica si hubo sesión ese día
+    - current_day_index es el índice del día actual (0=Lunes, 6=Domingo)
+    - se usa para mostrar la barra de progreso de manera real consultando la bd
+    """
+    today = datetime.utcnow().date()
+    
+    #se calcula el lunes de la semana en curso
+    days_since_monday = today.weekday()
+    monday = today - timedelta(days=days_since_monday)
+    
+    #aca se obtienen todas las sesiones completadas de la semana
+    week_sessions = session.exec(
+        select(SessionModel)
+        .where(SessionModel.user_id == current_user.id)
+        .where(SessionModel.completed == True)
+        .where(SessionModel.started_at >= datetime.combine(monday, datetime.min.time()))
+    ).all()
+    
+    #set de dias con sesiones 
+    days_with_sessions_set = set()
+    for s in week_sessions:
+        session_date = s.started_at.date()
+        # se convierte a 0-6 (Lunes=0, Domingo=6)
+        day_index = (session_date - monday).days
+        if 0 <= day_index <= 6:
+            days_with_sessions_set.add(day_index)
+    
+    # diariamente se crea un breakdown
+    daily_breakdown = []
+    for i in range(7):
+        daily_breakdown.append({
+            "day_index": i,
+            "completed": i in days_with_sessions_set
+        })
+    
+    return {
+        "days_with_sessions": len(days_with_sessions_set),
+        "daily_breakdown": daily_breakdown,
+        "current_day_index": today.weekday() 
+    }
+
+
 #ENDPOINT: COMPLETAR SESION
 @router.post("/complete")
 def complete_session(

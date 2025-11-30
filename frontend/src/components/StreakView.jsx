@@ -6,17 +6,27 @@ const API = import.meta.env.PUBLIC_API_URL || "";
 export default function StreakView() {
   const [streak, setStreak] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [weeklyStats, setWeeklyStats] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("focus_token");
     if (token) {
-      fetch(`${API}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((r) => r.json())
-        .then((u) => {
-          setStreak(u.current_streak_days);
+      //cargamos los datos del usuario y estadisticas semanales en paralelo
+      Promise.all([
+        fetch(`${API}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }).then((r) => r.json()),
+        fetch(`${API}/sessions/weekly-stats`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }).then((r) => (r.ok ? r.json() : null)),
+      ])
+        .then(([user, stats]) => {
+          setStreak(user.current_streak_days || 0);
+          setWeeklyStats(stats);
           setTimeout(() => setIsLoaded(true), 100);
+        })
+        .catch(() => {
+          setIsLoaded(true);
         });
     } else {
       setIsLoaded(true);
@@ -25,8 +35,12 @@ export default function StreakView() {
 
   // Los dias de la semana para la barra de progreso
   const days = ["L", "M", "X", "J", "V", "S", "D"];
-  const jsDay = new Date().getDay();
-  const currentDayIndex = jsDay === 0 ? 6 : jsDay - 1;
+
+  //se intenta usar los datos reales desde la bd, si no solo se usa el dia actual
+  const currentDayIndex =
+    weeklyStats?.current_day_index ??
+    (new Date().getDay() === 0 ? 6 : new Date().getDay() - 1);
+  const dailyBreakdown = weeklyStats?.daily_breakdown || null;
 
   // Determina el mensaje motivacional según la racha
   const getMessage = () => {
@@ -110,7 +124,10 @@ export default function StreakView() {
         {days.map((day, index) => {
           const isActive = index === currentDayIndex;
           const isPast = index < currentDayIndex;
-          const isCompleted = isPast || isActive;
+          //se intenta usar los datos reales desde la bd, si no solo se usa el dia actual
+          const isCompleted = dailyBreakdown
+            ? dailyBreakdown[index]?.completed
+            : isPast || isActive;
 
           return (
             <div
