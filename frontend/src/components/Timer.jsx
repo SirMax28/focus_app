@@ -16,6 +16,7 @@ export default function Timer() {
 
   const timerRef = useRef(null);
   const quoteRef = useRef(null);
+  const endTimeRef = useRef(null); // Guardamos la hora exacta en que debe terminar
 
   const quotes = [
     "Deja que el café se prepare...",
@@ -46,18 +47,46 @@ export default function Timer() {
     }
   }, [selectedMinutes, sessionStatus, isInitialized]);
 
+  // Timer basado en tiempo real para evitar ralentización en segundo plano
   useEffect(() => {
     if (isActive && timeLeft > 0) {
+      // Si no hay endTime guardado, calcularlo
+      if (!endTimeRef.current) {
+        endTimeRef.current = Date.now() + timeLeft * 1000;
+      }
+
       timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    } else if (timeLeft === 0) {
+        const remaining = Math.round((endTimeRef.current - Date.now()) / 1000);
+        if (remaining <= 0) {
+          setTimeLeft(0);
+          clearInterval(timerRef.current);
+        } else {
+          setTimeLeft(remaining);
+        }
+      }, 100); // Revisar más frecuentemente para mayor precisión
+    } else if (timeLeft === 0 && sessionStatus === "running") {
       finishSession();
     }
+
     return () => {
       clearInterval(timerRef.current);
     };
-  }, [isActive, timeLeft]);
+  }, [isActive]);
+
+  // Limpiar endTime cuando se pausa
+  useEffect(() => {
+    if (!isActive && sessionStatus === "running") {
+      // Al pausar, guardamos el tiempo restante y limpiamos endTime
+      endTimeRef.current = null;
+    }
+  }, [isActive]);
+
+  // Detectar cuando el tiempo llega a 0
+  useEffect(() => {
+    if (timeLeft === 0 && sessionStatus === "running") {
+      finishSession();
+    }
+  }, [timeLeft, sessionStatus]);
 
   // efecto separado para las quotes que van apareciendo
   useEffect(() => {
